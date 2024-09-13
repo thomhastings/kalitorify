@@ -7,7 +7,7 @@ Transparent Proxy through Tor for Kali Linux
 </p>
 
 <p align="center">
-<a href="https://github.com/brainfucksec/kalitorify/commits/master"><img src="https://img.shields.io/badge/version-1.29.0-blue"></a>
+<a href="https://github.com/brainfucksec/kalitorify/commits/master"><img src="https://img.shields.io/badge/version-1.29.1-blue"></a>
 <a href="https://github.com/brainfucksec/kalitorify/blob/master/README.md"><img src="https://img.shields.io/badge/docs-passing-brightgreen.svg"></a>
 <a href="https://github.com/brainfucksec/kalitorify/blob/master/LICENSE"><img src="https://img.shields.io/github/license/brainfucksec/kalitorify.svg"></a>
 <a href="https://github.com/brainfucksec/kalitorify/graphs/contributors"><img src="https://img.shields.io/github/contributors/brainfucksec/kalitorify.svg"></a>
@@ -57,7 +57,7 @@ git clone https://github.com/brainfucksec/kalitorify
 ```term
 sudo apt-get update && sudo apt-get dist-upgrade -y
 
-sudo apt-get install -y tor curl
+sudo apt-get install -y tor curl iptables macchanger
 ```
 
 ### Install kalitorify:
@@ -168,6 +168,8 @@ See: [Transparent Proxy: Brief Notes](https://gitlab.torproject.org/legacy/trac/
 ---
 
 ###  Hostname and MAC Address security risks
+
+**As of [Thom Hastings' version 1.29.1 fork](https://github.com/thomhastings/kalitorify), changing MAC address is now automatic** using [`macchanger`](https://www.kali.org/tools/macchanger/).
 
 Applications can still learn your computer's hostname, MAC address, serial number, timezone, etc. and those with root privileges can disable the firewall entirely. In other words, transparent torification with iptables protects against accidental connections and DNS leaks by misconfigured software, it is not sufficient to protect against malware or software with serious security vulnerabilities.
 
