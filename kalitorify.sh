@@ -128,29 +128,32 @@ print_version() {
 
 ## Configure general settings
 #
-# - packages: tor, curl
+# - packages: tor, curl, iptables, macchanger
 # - program directories, see: ${data_dir}, ${backup_dir}
 # - tor configuration file: /etc/tor/torrc
 # - DNS settings: /etc/resolv.conf
 setup_general() {
     info "Check program settings"
 
-    # packages
+    # packages (prompt to install them)
     declare -a dependencies=('tor' 'curl' 'iptables' 'macchanger')
     for package in "${dependencies[@]}"; do
         if ! hash "${package}" 2>/dev/null; then
-            read -r -p "'${package}' isn't installed, install dependencies over clearnet? [y/N] " response
-            if [[ "$response" =~ ^[Yy] ]]; then
-                apt-get update && apt-get install -y ${dependencies[@]}
-                if [ $? -eq 0 ]; then
-                    echo "Successfully installed dependencies."
-                    echo
-                else
-                    die "Failed to install dependencies, exit"
-                fi
-            else
-                die "'${package}' isn't installed, exit"
-            fi
+            while true; do # loop until you get a valid response
+                read -r -p "'${package}' isn't installed, install dependencies over clearnet? [y/n] " yn
+                case $yn in 
+                    [yY] | [yY][eE][sS] ) apt-get update && apt-get install -y ${dependencies[@]}
+                        if [ $? -eq 0 ]; then
+                            echo "Successfully installed dependencies."
+                            echo
+                            break
+                        else
+                            die "Failed to install dependencies, exit"
+                        fi;;
+                    [nN] | [nN][oO] ) die "'${package}' isn't installed, exit";;
+                    * ) echo "Please reply (yes|no) or (y|n)";;
+                esac
+            done
         fi
     done
 
@@ -331,7 +334,8 @@ check_ip() {
 
 ## Randomize MAC address
 #
-# Use macchanger to randomize MAC address of UP interfaces
+# Use macchanger to randomize MAC address of UP interfaces (besides loopback and virtual) (default behavior)
+# (should this prompt for interface or take an optional argument? default all interfaces regardless of UP|DOWN?)
 macchanger_start() {
     check_root
 
@@ -347,7 +351,7 @@ macchanger_start() {
 
 ## Restore MAC address
 #
-# Use macchanger to restore original MAC address of UP interfaces
+# Use macchanger to restore original MAC address of UP interfaces (besides loopback and virtual) (default behavior)
 macchanger_stop() {
     check_root
 
